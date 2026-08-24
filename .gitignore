@@ -1,0 +1,50 @@
+# macOS
+.DS_Store
+__MACOSX/
+/Archive*.zip
+
+# Xcode / Swift
+DerivedData/
+.build/
+.swiftpm/
+*.xcuserstate
+*.xcresult
+**/xcuserdata/
+
+# ESP-IDF generated content
+ProMistIDF/build/
+ProMistIDF/.builds/
+ProMistIDF/managed_components/
+ProMistIDF/sdkconfig
+ProMistIDF/sdkconfig.old
+ProMistIDF/sdkconfig [0-9]*
+
+# Developer-local editor settings
+ProMistIDF/.vscode/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.env
+.env.*
+!.env.example
+
+# Production secrets
+/keys/
+/secrets/
+*.pem
+*.key
+*.p12
+*.mobileprovision
+
+# Generated firmware artifacts
+*.elf
+*.bin
+*.map
+*.o
+*.a
+*.d
+*.log
+*.tmp
+*.swp

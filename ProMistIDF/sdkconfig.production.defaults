@@ -1,0 +1,33 @@
+# Hardened manufacturing overlay for a future 8 MB-or-larger production board.
+# It intentionally does not fit the current 4 MB prototype: two Matter images
+# are larger than the available flash. The signing key path is ignored by Git
+# and must be supplied by the controlled build environment.
+CONFIG_ESPTOOLPY_FLASHSIZE_8MB=y
+CONFIG_PARTITION_TABLE_CUSTOM=y
+CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions.production-8mb.csv"
+# Secure Boot V1 expands the bootloader beyond the default 0x7000-byte
+# allowance. Keep the production partition table clear of that signed image.
+CONFIG_PARTITION_TABLE_OFFSET=0x10000
+
+CONFIG_SECURE_BOOT=y
+CONFIG_SECURE_BOOT_V1_ENABLED=y
+CONFIG_SECURE_BOOT_BUILD_SIGNED_BINARIES=y
+CONFIG_SECURE_BOOT_SIGNING_KEY="../keys/promist-secure-boot-signing-key.pem"
+CONFIG_SECURE_FLASH_ENC_ENABLED=y
+CONFIG_SECURE_FLASH_ENCRYPTION_MODE_RELEASE=y
+CONFIG_NVS_ENCRYPTION=y
+CONFIG_NVS_SEC_KEY_PROTECT_USING_FLASH_ENC=y
+
+# Require modern LE Secure Connections for encrypted enrollment in production.
+# Level 1 is unauthenticated pairing with encryption: no-input/no-output Just
+# Works does not provide MITM authentication. Do not raise this to level 3
+# without a compatible authentication interaction; separately decide whether
+# enrollment will add setup-code/QR proof or trustworthy physical confirmation.
+CONFIG_BT_NIMBLE_SM_SC=y
+CONFIG_BT_NIMBLE_SM_SC_ONLY=1
+CONFIG_BT_NIMBLE_SM_LVL=1
+
+CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE=y
+CONFIG_BOOTLOADER_APP_ANTI_ROLLBACK=y
+CONFIG_BOOTLOADER_APP_SECURE_VERSION=1
+CONFIG_APP_RETRIEVE_LEN_ELF_SHA=16

@@ -1,0 +1,63 @@
+# ProMist Phase 3 pinned ESP-IDF configuration.
+CONFIG_IDF_TARGET="esp32"
+CONFIG_ESPTOOLPY_FLASHSIZE_4MB=y
+# The installed development controller reports a BOYA flash device. Use the
+# native vendor driver instead of ESP-IDF's functional-but-generic fallback.
+CONFIG_SPI_FLASH_SUPPORT_BOYA_CHIP=y
+CONFIG_FREERTOS_HZ=1000
+CONFIG_ENABLE_CHIPOBLE=y
+CONFIG_CHIPOBLE_ENABLE_ADVERTISING_AUTOSTART=1
+# Matter's CHIP-over-BLE layer accepts one inbound commissioning connection.
+# This is distinct from the two-link NimBLE host capacity below.
+CONFIG_CHIPOBLE_SINGLE_CONNECTION=y
+CONFIG_USE_BLE_ONLY_FOR_COMMISSIONING=n
+CONFIG_ESP_MATTER_ENABLE_DATA_MODEL=y
+# Explicit development identity. Release builds must use the CSA-assigned VID
+# and PID with matching production device-attestation credentials.
+CONFIG_DEVICE_VENDOR_ID=0xFFF1
+CONFIG_DEVICE_PRODUCT_ID=0x8000
+CONFIG_USE_TEST_SERIAL_NUMBER=""
+CONFIG_BT_ENABLED=y
+CONFIG_BT_NIMBLE_ENABLED=y
+CONFIG_BT_NIMBLE_ROLE_PERIPHERAL=y
+CONFIG_BT_NIMBLE_ROLE_BROADCASTER=y
+# This product never initiates or scans for BLE links. Keep the host limited to
+# the peripheral-only roles required by Matter and the proprietary service.
+CONFIG_BT_NIMBLE_ROLE_CENTRAL=n
+CONFIG_BT_NIMBLE_ROLE_OBSERVER=n
+# Two host links allow Matter commissioning and the proprietary GATT service to
+# coexist. ProMist still permits only one authenticated app-control session.
+CONFIG_BT_NIMBLE_MAX_CONNECTIONS=2
+CONFIG_BT_NIMBLE_ATT_PREFERRED_MTU=128
+CONFIG_BT_NIMBLE_MSYS1_BLOCK_COUNT=8
+CONFIG_BT_NIMBLE_NVS_PERSIST=y
+CONFIG_BT_NIMBLE_MAX_BONDS=3
+CONFIG_BT_NIMBLE_SM_SC=y
+# Development accepts legacy or LE Secure Connections encryption for the
+# one-time provisioning characteristic. Neither mode has MITM authentication.
+CONFIG_BT_NIMBLE_SM_SC_ONLY=0
+CONFIG_BT_NIMBLE_SM_LVL=0
+CONFIG_PARTITION_TABLE_CUSTOM=y
+CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions.csv"
+CONFIG_COMPILER_CXX_EXCEPTIONS=n
+CONFIG_COMPILER_OPTIMIZATION_SIZE=y
+# Tach and RF share an IRAM-allocated GPIO ISR service. RF samples the pin
+# level in its ISR, so the native GPIO control path must remain cache-safe.
+CONFIG_GPIO_CTRL_FUNC_IN_IRAM=y
+# Keep UART0 available for component-tagged ESP-IDF diagnostics while
+# compiling out verbose NimBLE and CHIP chatter. Panic backtraces remain
+# enabled for genuine crashes.
+CONFIG_BOOTLOADER_LOG_LEVEL_NONE=y
+CONFIG_LOG_DEFAULT_LEVEL_INFO=y
+CONFIG_BT_NIMBLE_LOG_LEVEL_NONE=y
+CONFIG_BT_NIMBLE_PRINT_ERR_NAME=n
+CONFIG_CHIP_LOG_DEFAULT_LEVEL_NONE=y
+CONFIG_CHIP_CONFIG_IM_PRETTY_PRINT=n
+CONFIG_ESP_WIFI_IRAM_OPT=n
+CONFIG_ESP_WIFI_RX_IRAM_OPT=n
+CONFIG_MBEDTLS_HKDF_C=y
+CONFIG_ESP_TASK_WDT_EN=y
+CONFIG_ESP_TASK_WDT_INIT=y
+CONFIG_ESP_TASK_WDT_TIMEOUT_S=5
+CONFIG_ESP_TASK_WDT_CHECK_IDLE_TASK_CPU0=y
+CONFIG_ESP_TASK_WDT_CHECK_IDLE_TASK_CPU1=y

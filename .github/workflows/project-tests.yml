@@ -1,0 +1,90 @@
+name: Project Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: project-tests-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  repository:
+    name: Repository files and README links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Check shell scripts
+        run: shellcheck scripts/*.sh
+      - name: Check repository files and protocol fixtures
+        run: ./scripts/check-repo-hygiene.sh
+      - name: Check Markdown links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --no-progress --accept 200,429 './**/*.md'
+          fail: true
+
+  firmware-unit:
+    name: Firmware unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: ./scripts/test-host.sh
+
+  firmware-sanitizers:
+    name: Firmware memory-safety tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: ./scripts/test-host-sanitized.sh
+
+  ios:
+    name: iOS app tests
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v5
+      - name: Select Xcode 26.5
+        run: |
+          test -d /Applications/Xcode_26.5.app
+          sudo xcode-select -s /Applications/Xcode_26.5.app/Contents/Developer
+          xcodebuild -version
+      - name: Select compatible simulator
+        id: simulator
+        run: echo "destination=$(./scripts/select-ios-simulator.sh)" >> "$GITHUB_OUTPUT"
+      - name: Run app, unit, and UI tests
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project ProMist/ProMist.xcodeproj \
+            -scheme ProMist \
+            -destination '${{ steps.simulator.outputs.destination }}' \
+            -derivedDataPath "$RUNNER_TEMP/ProMistDerivedData" \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
+
+  firmware-build:
+    name: ESP-IDF firmware build
+    runs-on: ubuntu-latest
+    env:
+      IDF_TOOLS_PATH: ${{ github.workspace }}/.idf-tools
+      PROMIST_IDF_PATH: ${{ github.workspace }}/.esp-idf-v5.5.5
+    steps:
+      - uses: actions/checkout@v5
+      - name: Cache ESP-IDF tools and components
+        uses: actions/cache@v4
+        with:
+          path: |
+            .idf-tools
+            ~/.cache/Espressif
+          key: esp-idf-5.5.5-${{ runner.os }}-${{ hashFiles('ProMistIDF/dependencies.lock', 'ProMistIDF/main/idf_component.yml') }}
+      - name: Install ESP-IDF 5.5.5
+        run: |
+          git clone --branch v5.5.5 --depth 1 --recursive \
+            https://github.com/espressif/esp-idf.git "$PROMIST_IDF_PATH"
+          "$PROMIST_IDF_PATH/install.sh" esp32
+      - name: Build native firmware
+        run: ./scripts/build-firmware-dev.sh

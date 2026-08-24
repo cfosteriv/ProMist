@@ -1,0 +1,16 @@
+--- a/connectedhomeip/connectedhomeip/src/platform/ESP32/nimble/BLEManagerImpl.cpp
++++ b/connectedhomeip/connectedhomeip/src/platform/ESP32/nimble/BLEManagerImpl.cpp
+@@ -948,7 +948,12 @@
+     ble_hs_cfg.reset_cb          = bleprph_on_reset;
+     ble_hs_cfg.sync_cb           = bleprph_on_sync;
+     ble_hs_cfg.store_status_cb   = ble_store_util_status_rr;
+-    ble_hs_cfg.sm_bonding        = 1;
++    // Matter PASE supplies commissioning security and does not require an SMP
++    // bond. ProMist uses link encryption only for its physically-authorized,
++    // one-time owner-key delivery; later sessions authenticate at the
++    // application layer. Keeping SMP non-bonding prevents iOS from applying a
++    // proprietary-service bond to a later Matter commissioning connection.
++    ble_hs_cfg.sm_bonding        = 0;
+     ble_hs_cfg.sm_our_key_dist   = BLE_SM_PAIR_KEY_DIST_ENC | BLE_SM_PAIR_KEY_DIST_ID;
+     ble_hs_cfg.sm_their_key_dist = BLE_SM_PAIR_KEY_DIST_ENC | BLE_SM_PAIR_KEY_DIST_ID;
+ 

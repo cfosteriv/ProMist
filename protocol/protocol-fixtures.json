@@ -1,0 +1,59 @@
+{
+  "protocolVersion": 2,
+  "byteOrder": "little-endian",
+  "iosApplicationIdentifier": "com.demo.ProMist",
+  "gattSchema": {
+    "serviceUUID": "6F8A0001-7C5A-4D8F-9B21-8D12D9B00100",
+    "characteristics": [
+      {"name": "information", "swiftName": "information", "cppName": "INFO_ID", "suffix": 2, "properties": ["read"], "sessionRequired": true},
+      {"name": "security", "swiftName": "security", "cppName": "SECURITY_ID", "suffix": 3, "properties": ["write", "notify"], "sessionRequired": true},
+      {"name": "state", "swiftName": "state", "cppName": "STATE_ID", "suffix": 4, "properties": ["read", "notify"], "sessionRequired": true},
+      {"name": "command", "swiftName": "command", "cppName": "COMMAND_ID", "suffix": 5, "properties": ["write"], "sessionRequired": true},
+      {"name": "response", "swiftName": "response", "cppName": "RESPONSE_ID", "suffix": 6, "properties": ["read", "notify"], "sessionRequired": true},
+      {"name": "logMetadata", "swiftName": "logMetadata", "cppName": "LOG_META_ID", "suffix": 7, "properties": ["read"], "sessionRequired": false},
+      {"name": "logRequest", "swiftName": "logRequest", "cppName": "LOG_REQUEST_ID", "suffix": 8, "properties": ["write"], "sessionRequired": false},
+      {"name": "logData", "swiftName": "logData", "cppName": "LOG_DATA_ID", "suffix": 9, "properties": ["notify"], "sessionRequired": false},
+      {"name": "friendlyName", "swiftName": "friendlyName", "cppName": "FRIENDLY_NAME_ID", "suffix": 10, "properties": ["read", "write", "notify"], "sessionRequired": false},
+      {"name": "matterOnboarding", "swiftName": "matterOnboarding", "cppName": "MATTER_ONBOARDING_ID", "suffix": 11, "properties": ["write", "notify"], "sessionRequired": false},
+      {"name": "provisioning", "swiftName": "provisioning", "cppName": "PROVISIONING_ID", "suffix": 12, "properties": ["write", "writeEncrypted"], "sessionRequired": true},
+      {"name": "breezeSlot0", "swiftName": "breezeSlot0", "cppName": "BREEZE_SLOT_0_ID", "suffix": 13, "properties": ["read", "write", "notify"], "sessionRequired": false},
+      {"name": "breezeSlot1", "swiftName": "breezeSlot1", "cppName": "BREEZE_SLOT_1_ID", "suffix": 14, "properties": ["read", "write", "notify"], "sessionRequired": false},
+      {"name": "breezeSlot2", "swiftName": "breezeSlot2", "cppName": "BREEZE_SLOT_2_ID", "suffix": 15, "properties": ["read", "write", "notify"], "sessionRequired": false}
+    ]
+  },
+  "vectors": [
+    {
+      "name": "current-device-information",
+      "semantic": {
+        "hardwareRevision": 1,
+        "featureFlags": 1023,
+        "deviceID": "0102030405060708",
+        "firmwareVersion": [0, 2, 0]
+      },
+      "hex": "0201ff03080706050403020100020000"
+    },
+    {
+      "name": "set-mist-request",
+      "semantic": {"opcode": 3, "value": 1, "requestID": 305419896},
+      "hex": "0203000178563412"
+    },
+    {
+      "name": "clear-faults-request",
+      "semantic": {"opcode": 10, "value": 0, "requestID": 10},
+      "hex": "020a00000a000000"
+    },
+    {
+      "name": "unauthorized-response",
+      "semantic": {"result": 8, "opcode": 3, "requestID": 305419896},
+      "hex": "0208030078563412"
+    },
+    {
+      "name": "authentication-hmac",
+      "ownerKeyHex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+      "deviceID": "0102030405060708",
+      "clientNonceHex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+      "deviceNonceHex": "202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f",
+      "hmacHex": "74898e0484ec7baef027fe9e759eba0e9a7e490f85bb85950a7585759005f357"
+    }
+  ]
+}
